@@ -149,13 +149,13 @@ const model = {
         //small grid
         startingIndex = chance.pickone([0, 3, 6]);
         if (startingIndex == 0) {
-          stoppingIndex = chance.pickone([2, 5, 8]);
+          stoppingIndex = chance.pickone([5, 8]);
           model.hotwire.startingSquareCoords = { x: -35, y: 50 };
         } else if (startingIndex == 3) {
-          stoppingIndex = chance.pickone([2, 5, 8]);
+          stoppingIndex = chance.pickone([2, 8]);
           model.hotwire.startingSquareCoords = { x: -35, y: 155 };
         } else {
-          stoppingIndex = chance.pickone([2, 5, 8]);
+          stoppingIndex = chance.pickone([2, 5]);
           model.hotwire.startingSquareCoords = { x: -35, y: 260 };
         }
         if (stoppingIndex == 2) model.hotwire.stoppingSquareCoords = { x: 330, y: 50 };
@@ -171,7 +171,7 @@ const model = {
           stoppingIndex = chance.pickone([3, 11, 15, 14]);
           model.hotwire.startingSquareCoords = { x: -35, y: 118 };
         } else if (startingIndex == 8) {
-          stoppingIndex = chance.pickone([2, 3, 11, 15]);
+          stoppingIndex = chance.pickone([2, 3, 7, 15]);
           model.hotwire.startingSquareCoords = { x: -35, y: 196 };
         } else {
           stoppingIndex = chance.pickone([2, 3, 7, 11]);
@@ -200,19 +200,19 @@ const model = {
       } else {
         startingIndex = chance.pickone([0, 5, 10, 15, 20]);
         if (startingIndex == 0) {
-          stoppingIndex = chance.pickone([4, 9, 14, 19, 24, 23, 22]);
+          stoppingIndex = chance.pickone([9, 14, 19, 24, 23, 22]);
           model.hotwire.startingSquareCoords = { x: -35, y: 30 };
         } else if (startingIndex == 5) {
-          stoppingIndex = chance.pickone([3, 4, 9, 14, 19, 24, 23, 22]);
+          stoppingIndex = chance.pickone([3, 4, 14, 19, 24, 23, 22]);
           model.hotwire.startingSquareCoords = { x: -35, y: 93 };
         } else if (startingIndex == 10) {
-          stoppingIndex = chance.pickone([2, 3, 4, 9, 14, 19, 24, 23, 22]);
+          stoppingIndex = chance.pickone([2, 3, 4, 9, 24, 23, 22]);
           model.hotwire.startingSquareCoords = { x: -35, y: 155 };
         } else if (startingIndex == 15) {
           stoppingIndex = chance.pickone([2, 3, 4, 9, 14, 19, 24, 23]);
           model.hotwire.startingSquareCoords = { x: -35, y: 218 };
         } else {
-          stoppingIndex = chance.pickone([1, 2, 3, 4, 9, 14, 19, 24]);
+          stoppingIndex = chance.pickone([1, 2, 3, 4, 9, 14, 19]);
           model.hotwire.startingSquareCoords = { x: -35, y: 280 };
         }
 
