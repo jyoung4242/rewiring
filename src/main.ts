@@ -388,18 +388,26 @@ const model = {
               clearInterval(model.hotwire.timeHandler);
 
               model.hotwire.timeHandler = 0;
-            }, 1500);
+            }, 2500);
           } else if (!model.hotwire.gamePaused) model.hotwire.timeremaining--;
         }, 1000);
       }
     },
     squareclick: (_e: any, model: any, el: any, a: any, object: any) => {
-      if (object.$parent.$model.hotwire.victoryStatus == "VICTORY") return;
+      if (
+        object.$parent.$model.hotwire.victoryStatus == "VICTORY" ||
+        object.$parent.$model.hotwire.victoryStatus == "UNSUCCESSFUL"
+      )
+        return;
       model.square.angle += 90;
     },
     energizeHandler: 0,
     squareRightClick: (_e: any, model: any, el: any, a: any, object: any) => {
-      if (object.$parent.$model.hotwire.victoryStatus == "VICTORY") return;
+      if (
+        object.$parent.$model.hotwire.victoryStatus == "VICTORY" ||
+        object.$parent.$model.hotwire.victoryStatus == "UNSUCCESSFUL"
+      )
+        return;
       model.square.angle -= 90;
     },
     solution: <any>[],
@@ -891,6 +899,8 @@ function runVictory() {
   model.hotwire.timeIsRunning = false;
   model.hotwire.victoryStatus = "VICTORY";
   model.hotwire.showFinalModal = true;
+  clearInterval(model.hotwire.timeHandler);
+  model.hotwire.timeHandler = 0;
   clearInterval(model.hotwire.energizeHandler);
   model.hotwire.energizeHandler = 0;
   setTimeout(() => {
@@ -898,7 +908,5 @@ function runVictory() {
     model.hotwire.showFinalModal = false;
     model.hotwire.isVisible = false;
     model.result = "SUCCESS";
-    clearInterval(model.hotwire.timeHandler);
-    model.hotwire.timeHandler = 0;
   }, 2500);
 }
