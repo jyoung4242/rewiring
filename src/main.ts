@@ -42,22 +42,28 @@ const model = {
       case "easy":
         model.hotwire.appwidth = 600;
         model.hotwire.numOfTargets = 9;
+        model.hotwire.timeremaining = 20;
         break;
       case "med":
         model.hotwire.appwidth = 600;
         model.hotwire.numOfTargets = 16;
+        model.hotwire.timeremaining = 15;
         break;
       case "hard":
         model.hotwire.appwidth = 600;
         model.hotwire.numOfTargets = 25;
+        model.hotwire.timeremaining = 10;
         break;
     }
     model.result = "PENDING";
+
     model.hotwire.isVisible = !model.hotwire.isVisible;
     model.hotwire.squares = [];
-    setTimeout(() => {
-      model.hotwire.onLoad(model);
-    }, 375);
+    if (model.hotwire.isVisible) {
+      setTimeout(() => {
+        model.hotwire.onLoad(model);
+      }, 375);
+    }
   },
   level: "easy",
   result: "waiting",
@@ -71,8 +77,20 @@ const model = {
     startingSquareCoords: { x: 0, y: 0 },
     stoppingSquareCoords: { x: 0, y: 0 },
     isVisible: false,
-    victoryStatus: "cancelled",
+    victoryStatus: "CANCELLED",
     onLoad: () => {
+      //set defaults
+      model.hotwire.isHelpVisible = false;
+      model.hotwire.showFinalModal = false;
+      model.hotwire.timeIsRunning = false;
+      //start the game timer
+      //reset game timer if already instanced
+      if (model.hotwire.timeHandler != 0) {
+        clearInterval(model.hotwire.timeHandler);
+        model.hotwire.timeHandler = 0;
+      }
+      checkTime();
+
       //add squares
       model.hotwire.squares = [];
 
@@ -92,9 +110,6 @@ const model = {
           get connectionPoints() {
             return getConnectionPoints(this.id);
           },
-          /* get energized() {
-            return isEnergized(this.id, width);
-          }, */
           energizedDirections: [],
           startingIndex: false,
           stoppingIndex: false,
@@ -247,7 +262,6 @@ const model = {
         testcnt++;
         if (testcnt >= 20) break;
       } while (resultArray.length == 0);
-      //console.log("solution path: ", resultArray);
 
       //based on solution path, update array tile types to make solution work
 
@@ -265,8 +279,6 @@ const model = {
           else if (tile.y == currentCoords.y + 1) direction = "down";
           else if (currentCoords.y == tile.y + 1) direction = "up";
         } else return;
-        //console.log("starting: ", currentDirection, currentCoords.x, currentCoords.y);
-        //console.log("direction", direction, tile);
 
         //depending on the previous tile, set the current tile type by where we are headed
         let currentIndex = getIndexFromCoords(currentCoords, width);
@@ -315,7 +327,7 @@ const model = {
         }
       });
       //set last tile
-      //console.log("last tile: ", currentDirection, stopside);
+
       if (currentDirection == "left") {
         if (stopside == "top" || stopside == "bottom") {
           model.hotwire.squares[stoppingIndex].tiletype = chance.pickone(["tiletype_elbow", "tiletype_dblelbow"]);
@@ -339,8 +351,29 @@ const model = {
       model.hotwire.energizeHandler = setInterval(() => {
         checkForEnergizedSquares(width);
       }, 100);
+    },
+    timeCheck: () => {
+      if (!model.hotwire.timeIsRunning) {
+        model.hotwire.timeIsRunning = true;
+        model.hotwire.timeHandler = setInterval(() => {
+          if (model.hotwire.timeremaining == 0) {
+            model.hotwire.timeIsRunning = false;
+            model.hotwire.victoryStatus = "UNSUCCESSFUL";
+            model.hotwire.showFinalModal = true;
 
-      //start the game timer
+            setTimeout(() => {
+              model.hotwire.isHelpVisible = false;
+              model.hotwire.showFinalModal = false;
+              model.hotwire.isVisible = false;
+              model.result = "UNSUCCESSFUL";
+              clearInterval(model.hotwire.timeHandler);
+              clearInterval(model.hotwire.energizeHandler);
+              model.hotwire.timeHandler = 0;
+              model.hotwire.energizeHandler = 0;
+            }, 1500);
+          } else if (!model.hotwire.gamePaused) model.hotwire.timeremaining--;
+        }, 1000);
+      }
     },
     squareclick: (_e: any, model: any) => {
       debugFlag = true;
@@ -354,14 +387,19 @@ const model = {
       model.square.angle -= 90;
     },
     solution: <any>[],
-    closeGame: () => {},
+    closeGame: () => {
+      CancelGame();
+    },
     showFinalModal: false,
     showHelp: (event: any, model: any) => {
       model.hotwire.isHelpVisible = !model.hotwire.isHelpVisible;
+      //pause timer
+      model.hotwire.gamePaused = model.hotwire.isHelpVisible;
     },
+    gamePaused: false,
     isHelpVisible: false,
     appwidth: 500,
-    timeremaining: 30,
+    timeremaining: 10,
     get getTimeRemaining() {
       if (model.hotwire.timeremaining >= 10) {
         return model.hotwire.timeremaining.toString();
@@ -406,6 +444,17 @@ const template = `<div>
                 <div class="stopsquare stop_\${square.stopside}" style="top: \${hotwire.stoppingSquareCoords.y}px; left: \${hotwire.stoppingSquareCoords.x}px"></div>
            </div>
         </div>
+        <div class="helpModal" \${===hotwire.isHelpVisible}>
+          <div class="helpText">
+            <p>Instructions: Objective of game is to manipulate the electrical path from power to the bypass connection.</p>
+            <p>Controls: left and right click on the tiles will rotate them clockwise/counter-clockwise</p>
+            <p>GamePlay: The electrical signal will pass through the connetions as you make them showing your progress</p>
+            <p>As the game becomes more difficult, there are more tiles and less time, the time starts as soon as game does</p>
+          </div>
+        </div>
+        <div class="finalModal" \${===hotwire.showFinalModal}>
+          <div class="modalText">\${hotwire.victoryStatus}</div>
+        </div> 
     </div>
 </div>`;
 
@@ -413,8 +462,10 @@ UI.create(document.body, template, model);
 
 let globalAnimationFrame = 0;
 let animationHandler = setInterval(() => {
-  globalAnimationFrame++;
-  if (globalAnimationFrame == 10) globalAnimationFrame = 0;
+  if (model.hotwire.isVisible) {
+    globalAnimationFrame++;
+    if (globalAnimationFrame == 10) globalAnimationFrame = 0;
+  }
 }, 100);
 
 function getEnergizeImage(tile: string | undefined): string {
@@ -533,8 +584,6 @@ function getIndexFromCoords(coords: any, width: number): number {
 }
 
 function isEnergized(index: number, width: number): boolean {
-  console.log(index);
-
   //what are my connection points?
   let connectionPoints = model.hotwire.squares[index].connectionPoints;
   //which entails my type and my angle
@@ -555,11 +604,6 @@ function isEnergized(index: number, width: number): boolean {
           if (index % width != 0) {
             //non-left side of matrix
             let leftNeighbor = model.hotwire.squares[index - 1];
-            console.log("left neighbor: ", leftNeighbor);
-
-            if (leftNeighbor.energized && leftNeighbor.connectionPoints.has(4)) {
-              console.log("does this even work?");
-            }
           } else {
             //test for starting index
           }
@@ -648,10 +692,8 @@ function checkForEnergizedSquares(width: number) {
   //start with starting index
   let sp = model.hotwire.startingSquare;
   let side = "left";
-
   let loopCntrl = true;
   let currentIndex = sp;
-
   while (loopCntrl) {
     let tile = model.hotwire.squares[currentIndex];
     if (tile == undefined) {
@@ -660,9 +702,7 @@ function checkForEnergizedSquares(width: number) {
     //is cp on side
     let cps;
     let matching = 0;
-    if (debugFlag) {
-      console.log(`debug: tile: `, tile);
-    }
+
     switch (side) {
       case "left":
         try {
@@ -671,9 +711,6 @@ function checkForEnergizedSquares(width: number) {
           return;
         }
         matching = 1;
-        if (debugFlag) {
-          console.log(`debug: cps: `, cps, " matching: ", matching);
-        }
         break;
       case "up":
         try {
@@ -682,9 +719,6 @@ function checkForEnergizedSquares(width: number) {
           return;
         }
         matching = 2;
-        if (debugFlag) {
-          console.log(`debug: cps: `, cps);
-        }
         break;
       case "right":
         try {
@@ -693,9 +727,6 @@ function checkForEnergizedSquares(width: number) {
           return;
         }
         matching = 3;
-        if (debugFlag) {
-          console.log(`debug: cps: `, cps, " matching: ", matching);
-        }
         break;
       case "down":
         try {
@@ -704,14 +735,9 @@ function checkForEnergizedSquares(width: number) {
           return;
         }
         matching = 4;
-        if (debugFlag) {
-          console.log(`debug: cps: `, cps, " matching: ", matching);
-        }
         break;
     }
-    if (debugFlag) {
-      console.log(`debug: matching: ${matching}, side: ${side}, cps: ${cps}`);
-    }
+
     if (cps) {
       //if y, energize, plus find matching connection point, then check next index
 
@@ -723,10 +749,6 @@ function checkForEnergizedSquares(width: number) {
 
       //energizedAngle code
       if (tile.tiletype == "tiletype_dblelbow") {
-        if (debugFlag) {
-          console.log(`debug: dblelbow side: ${side}, angle: ${tile.angle}`);
-        }
-
         if ((side == "left" && (tile.angle % 360 == 180 || tile.angle % 360 == 270)) || tile.angle % 360 == -90)
           tile.energizedAngle = 180;
         else if (side == "left") tile.energizedAngle = 0;
@@ -740,15 +762,6 @@ function checkForEnergizedSquares(width: number) {
           tile.energizedAngle = 180;
         else if (side == "right") tile.energizedAngle = 0;
       } else if (tile.tiletype == "tiletype_cross") {
-        console.log(
-          "cross rotation: angle: ",
-          tile.angle,
-          " and side = ",
-          side,
-          " and energized angle: ",
-          tile.energizedAngle
-        );
-
         if (side == "left" && (tile.angle % 360 == 90 || tile.angle % 360 == -90 || tile.angle % 360 == 270))
           tile.energizedAngle = 90;
         else if (side == "up" && (tile.angle % 360 == 0 || tile.angle % 360 == 180 || tile.angle % 360 == -180))
@@ -763,10 +776,7 @@ function checkForEnergizedSquares(width: number) {
       //find next tile
       let matchedSide =
         tile.connectionPoints.filter((p: any) => p.includes(matching))[0]?.filter((p: any) => p !== matching)[0] ?? -1;
-
-      if (debugFlag) {
-        console.log(`debug: matchedSide: ${matchedSide}`);
-      }
+      checkForVictory(side, matchedSide);
 
       //you have to flip the direction, so 1 being the left of the current tile, would be the 'right' of the next tile
       let nextIndex = -1;
@@ -790,9 +800,7 @@ function checkForEnergizedSquares(width: number) {
       }
       //ensure next index is valid, if it isn't, stop
       //if it is, next iteration
-      if (nextIndex == 9) {
-        console.log("9 ", side);
-      }
+
       let legitTile = true;
       if (tile.id % width == 0 && side == "right") legitTile = false; //left side tile, so can't come from right
       else if (tile.id < width && side == "down") legitTile = false; //top side tile, can't come from bottom
@@ -802,24 +810,72 @@ function checkForEnergizedSquares(width: number) {
       if (legitTile) {
         loopCntrl = true;
         currentIndex = nextIndex;
-        if (debugFlag) {
-          console.log(`debug: tile energize state: ${tile.energized}`);
-        }
       } else {
         loopCntrl = false;
-        if (debugFlag) {
-          debugFlag = false;
-          console.log(`debug: tile:`, tile);
-        }
       }
     } else {
-      if (debugFlag) {
-        debugFlag = false;
-        console.log(`debug: tile:`, tile);
-      }
       //if n, bomb out of loop
       //tile.energized = false;
       loopCntrl = false;
     }
   }
+}
+
+function checkTime() {
+  model.hotwire.timeCheck();
+}
+
+function checkForVictory(side: string, matchedSide: number) {
+  //if stopping index square energized
+  //start with stopping index
+  let sp = model.hotwire.stoppingSquare;
+  let tile = model.hotwire.squares[sp];
+  let endingside = model.hotwire.stopOrientation;
+
+  //and if energy is passed to correct side
+  if (tile.energized) {
+    switch (matchedSide) {
+      case 1:
+        if (endingside == "left") runVictory();
+        break;
+      case 2:
+        if (endingside == "top") runVictory();
+        break;
+      case 3:
+        if (endingside == "right") runVictory();
+        break;
+      case 4:
+        if (endingside == "bottom") runVictory();
+        break;
+    }
+  }
+
+  //do winning code
+}
+
+function CancelGame() {
+  model.hotwire.isHelpVisible = false;
+  model.hotwire.showFinalModal = false;
+  model.hotwire.isVisible = false;
+  model.result = "CANCELLED";
+  clearInterval(model.hotwire.timeHandler);
+  clearInterval(model.hotwire.energizeHandler);
+  model.hotwire.timeHandler = 0;
+  model.hotwire.energizeHandler = 0;
+}
+
+function runVictory() {
+  model.hotwire.timeIsRunning = false;
+  model.hotwire.victoryStatus = "VICTORY";
+  model.hotwire.showFinalModal = true;
+  setTimeout(() => {
+    model.hotwire.isHelpVisible = false;
+    model.hotwire.showFinalModal = false;
+    model.hotwire.isVisible = false;
+    model.result = "SUCCESS";
+    clearInterval(model.hotwire.timeHandler);
+    clearInterval(model.hotwire.energizeHandler);
+    model.hotwire.timeHandler = 0;
+    model.hotwire.energizeHandler = 0;
+  }, 1500);
 }
