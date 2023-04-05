@@ -9,7 +9,8 @@ document.addEventListener("keypress", () => {
   console.clear();
   debugFlag = !debugFlag;
 });
-const chance = new Chance();
+
+let chance = new Chance();
 
 enum tiletype {
   straight = "straight",
@@ -38,6 +39,10 @@ const animationFrameDims = {
 
 const model = {
   launch: (event: any, model: any) => {
+    model.seed = Math.random() * Date.now();
+    chance = new Chance(model.seed);
+    //chance = new Chance(978215731746.3297);
+
     switch (model.level) {
       case "easy":
         model.hotwire.appwidth = 600;
@@ -56,18 +61,29 @@ const model = {
         break;
     }
     model.result = "PENDING";
-
+    model.hotwire.victoryStatus = "PENDING";
     model.hotwire.isVisible = !model.hotwire.isVisible;
     model.hotwire.squares = [];
     if (model.hotwire.isVisible) {
+      model.hotwire.initFlag = true;
       setTimeout(() => {
         model.hotwire.onLoad(model);
       }, 375);
+    } else {
+      model.hotwire.timeIsRunning = false;
+      model.hotwire.victoryStatus = "CANCELLED";
+      model.result = "CANCELLED";
+      model.hotwire.showFinalModal = false;
+
+      if (model.hotwire.energizeHandler != 0) clearInterval(model.hotwire.energizeHandler);
+      if (model.hotwire.timeHandler) clearInterval(model.hotwire.timeHandler);
+      model.hotwire.energizeHandler = 0;
+      model.hotwire.timeHandler = 0;
     }
   },
   level: "easy",
   result: "waiting",
-
+  seed: <any>undefined,
   hotwire: {
     numOfTargets: 0,
     squares: <any>[],
@@ -77,9 +93,11 @@ const model = {
     startingSquareCoords: { x: 0, y: 0 },
     stoppingSquareCoords: { x: 0, y: 0 },
     isVisible: false,
+    initFlag: true,
     victoryStatus: "CANCELLED",
     onLoad: () => {
       //set defaults
+
       model.hotwire.isHelpVisible = false;
       model.hotwire.showFinalModal = false;
       model.hotwire.timeIsRunning = false;
@@ -348,9 +366,9 @@ const model = {
         }
       }
       model.hotwire.squares[stoppingIndex].energizetype = getEnergizeImage(model.hotwire.squares[stoppingIndex].tiletype);
-      model.hotwire.energizeHandler = setInterval(() => {
-        checkForEnergizedSquares(width);
-      }, 100);
+
+      //run init victory check
+      if (model.hotwire.initFlag) checkForEnergizedSquares(width);
     },
     timeCheck: () => {
       if (!model.hotwire.timeIsRunning) {
@@ -360,30 +378,28 @@ const model = {
             model.hotwire.timeIsRunning = false;
             model.hotwire.victoryStatus = "UNSUCCESSFUL";
             model.hotwire.showFinalModal = true;
-
+            clearInterval(model.hotwire.energizeHandler);
+            model.hotwire.energizeHandler = 0;
             setTimeout(() => {
               model.hotwire.isHelpVisible = false;
               model.hotwire.showFinalModal = false;
               model.hotwire.isVisible = false;
               model.result = "UNSUCCESSFUL";
               clearInterval(model.hotwire.timeHandler);
-              clearInterval(model.hotwire.energizeHandler);
+
               model.hotwire.timeHandler = 0;
-              model.hotwire.energizeHandler = 0;
             }, 1500);
           } else if (!model.hotwire.gamePaused) model.hotwire.timeremaining--;
         }, 1000);
       }
     },
-    squareclick: (_e: any, model: any) => {
-      debugFlag = true;
-      console.clear();
+    squareclick: (_e: any, model: any, el: any, a: any, object: any) => {
+      if (object.$parent.$model.hotwire.victoryStatus == "VICTORY") return;
       model.square.angle += 90;
     },
     energizeHandler: 0,
-    squareRightClick: (_e: any, model: any) => {
-      debugFlag = true;
-      console.clear();
+    squareRightClick: (_e: any, model: any, el: any, a: any, object: any) => {
+      if (object.$parent.$model.hotwire.victoryStatus == "VICTORY") return;
       model.square.angle -= 90;
     },
     solution: <any>[],
@@ -412,7 +428,7 @@ const model = {
     timeHandler: 0,
   },
 };
-
+//<p>Seed is: \${seed}</p>
 const template = `<div> 
     <div class='controls'> 
         <button \${click@=>launch}> launch minigame</button>
@@ -421,7 +437,8 @@ const template = `<div>
             <option \${'med' ==> level}>Medium</option>
             <option \${'hard' ==> level}>Hard</option>
         </select>
-        <input class="result" type="text" readonly \${value<==result}></input>   
+        <input class="result" type="text" readonly \${value<==result}></input>  
+        
     </div>
     <div class="minigame" \${===hotwire.isVisible} style="width:\${hotwire.appwidth}px">
         <div style="width: 100%;height:10%; "><span class="game_title">HOTWIRE THE LOCK</span></div>
@@ -583,44 +600,6 @@ function getIndexFromCoords(coords: any, width: number): number {
   return coords.x + coords.y * width;
 }
 
-function isEnergized(index: number, width: number): boolean {
-  //what are my connection points?
-  let connectionPoints = model.hotwire.squares[index].connectionPoints;
-  //which entails my type and my angle
-  let type = model.hotwire.squares[index].tiletype;
-  let angle = model.hotwire.squares[index].angle;
-
-  //for each connection point
-  //is my neighbor's connection points
-  for (let index = 0; index < connectionPoints.length; index++) {
-    const pairOfPoints = connectionPoints[index];
-    for (let innerIndex = 0; innerIndex < pairOfPoints.length; innerIndex++) {
-      const innerPoint = pairOfPoints[innerIndex];
-      //depending on point, check you're neighbor
-      switch (innerPoint) {
-        case 1:
-          //check left neighbor
-
-          if (index % width != 0) {
-            //non-left side of matrix
-            let leftNeighbor = model.hotwire.squares[index - 1];
-          } else {
-            //test for starting index
-          }
-          break;
-        case 2:
-          break;
-        case 3:
-          break;
-        case 4:
-          break;
-      }
-    }
-  }
-
-  return false;
-}
-
 function getConnectionPoints(index: number) {
   //based on tiletype and orientation
   //   --------------
@@ -631,6 +610,7 @@ function getConnectionPoints(index: number) {
   //   --------------
   //          4
   let angle = model.hotwire.squares[index].angle;
+
   switch (model.hotwire.squares[index].tiletype) {
     case "tiletype_straight":
       if (Math.abs(angle % 360) == 0 || Math.abs(angle % 360) == 180) {
@@ -657,6 +637,7 @@ function getConnectionPoints(index: number) {
       } else if (angle % 360 == 270 || angle % 360 == -90) {
         return [[3, 4]];
       }
+
       break;
     case "tiletype_dblelbow":
       if (Math.abs(angle % 360) == 0) {
@@ -697,7 +678,7 @@ function checkForEnergizedSquares(width: number) {
   while (loopCntrl) {
     let tile = model.hotwire.squares[currentIndex];
     if (tile == undefined) {
-      console.log(currentIndex);
+      loopCntrl = false;
     }
     //is cp on side
     let cps;
@@ -711,6 +692,7 @@ function checkForEnergizedSquares(width: number) {
           return;
         }
         matching = 1;
+
         break;
       case "up":
         try {
@@ -776,7 +758,23 @@ function checkForEnergizedSquares(width: number) {
       //find next tile
       let matchedSide =
         tile.connectionPoints.filter((p: any) => p.includes(matching))[0]?.filter((p: any) => p !== matching)[0] ?? -1;
-      checkForVictory(side, matchedSide);
+
+      //check for initial condition
+      //&& currentIndex == model.hotwire.stoppingSquare
+      if (model.hotwire.initFlag && model.hotwire.stoppingSquare == currentIndex) {
+        let rslt = checkForVictory(side, matchedSide);
+        if (rslt) {
+          //reset tile angles
+          console.log("RESET TILES");
+          model.hotwire.onLoad();
+          return;
+        } else {
+          model.hotwire.initFlag = false;
+          model.hotwire.energizeHandler = setInterval(() => {
+            checkForEnergizedSquares(width);
+          }, 100);
+        }
+      } else checkForVictory(side, matchedSide);
 
       //you have to flip the direction, so 1 being the left of the current tile, would be the 'right' of the next tile
       let nextIndex = -1;
@@ -812,11 +810,23 @@ function checkForEnergizedSquares(width: number) {
         currentIndex = nextIndex;
       } else {
         loopCntrl = false;
+        if (model.hotwire.initFlag) {
+          model.hotwire.initFlag = false;
+          model.hotwire.energizeHandler = setInterval(() => {
+            checkForEnergizedSquares(width);
+          }, 100);
+        }
       }
     } else {
       //if n, bomb out of loop
-      //tile.energized = false;
+      debugFlag = false;
       loopCntrl = false;
+      if (model.hotwire.initFlag) {
+        model.hotwire.initFlag = false;
+        model.hotwire.energizeHandler = setInterval(() => {
+          checkForEnergizedSquares(width);
+        }, 100);
+      }
     }
   }
 }
@@ -825,32 +835,45 @@ function checkTime() {
   model.hotwire.timeCheck();
 }
 
-function checkForVictory(side: string, matchedSide: number) {
+function checkForVictory(side: string, matchedSide: number): boolean {
   //if stopping index square energized
   //start with stopping index
   let sp = model.hotwire.stoppingSquare;
   let tile = model.hotwire.squares[sp];
   let endingside = model.hotwire.stopOrientation;
+  let init = model.hotwire.initFlag;
 
   //and if energy is passed to correct side
   if (tile.energized) {
     switch (matchedSide) {
       case 1:
-        if (endingside == "left") runVictory();
-        break;
+        if (endingside == "left") {
+          if (!init) runVictory();
+          return true;
+        }
+        return false;
       case 2:
-        if (endingside == "top") runVictory();
-        break;
+        if (endingside == "top") {
+          if (!init) runVictory();
+          return true;
+        }
+        return false;
       case 3:
-        if (endingside == "right") runVictory();
-        break;
+        if (endingside == "right") {
+          if (!init) runVictory();
+          return true;
+        }
+        return false;
       case 4:
-        if (endingside == "bottom") runVictory();
-        break;
+        if (endingside == "bottom") {
+          if (!init) runVictory();
+          return true;
+        }
+        return false;
     }
-  }
+  } else return false;
 
-  //do winning code
+  return false;
 }
 
 function CancelGame() {
@@ -868,14 +891,14 @@ function runVictory() {
   model.hotwire.timeIsRunning = false;
   model.hotwire.victoryStatus = "VICTORY";
   model.hotwire.showFinalModal = true;
+  clearInterval(model.hotwire.energizeHandler);
+  model.hotwire.energizeHandler = 0;
   setTimeout(() => {
     model.hotwire.isHelpVisible = false;
     model.hotwire.showFinalModal = false;
     model.hotwire.isVisible = false;
     model.result = "SUCCESS";
     clearInterval(model.hotwire.timeHandler);
-    clearInterval(model.hotwire.energizeHandler);
     model.hotwire.timeHandler = 0;
-    model.hotwire.energizeHandler = 0;
   }, 1500);
 }
