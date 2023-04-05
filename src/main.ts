@@ -900,5 +900,5 @@ function runVictory() {
     model.result = "SUCCESS";
     clearInterval(model.hotwire.timeHandler);
     model.hotwire.timeHandler = 0;
-  }, 1500);
+  }, 2500);
 }
