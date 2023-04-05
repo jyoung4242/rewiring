@@ -1,0 +1,415 @@
+@font-face {
+  font-family: myFont;
+  src: url("./assets/font.otf");
+}
+
+/*style.css*/
+body {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+  line-height: 1;
+  background-color: var(--current-background);
+  color: var(--current-foreground);
+}
+.color1 {
+  color: #131617;
+}
+.color2 {
+  color: #34393c;
+}
+.color3 {
+  color: #5e676b;
+}
+.color4 {
+  color: #929fa4;
+}
+.color5 {
+  color: #d0e3e9;
+}
+:root {
+  /* Dark theme */
+  --dark-background: #34393c;
+  --dark-dark-accent: #131617;
+  --dark-neutral: #5e676b;
+  --dark-light-accent: #929fa4;
+  --dark-foregeound: #d0e3e9;
+  /* Light theme */
+  --light-background: #d0e3e9;
+  --light-dark-accent: #131617;
+  --light-foregeound: #34393c;
+  --light-neutral: #5e676b;
+  --light-light-accent: #929fa4;
+  /* Defaults */
+  --current-background: var(--light-background);
+  --current-dark-accent: var(--light-dark-accent);
+  --current-light-accent: var(--light-light-accent);
+  --current-foreground: var(--light-foregeound);
+  --current-neutral: var(--light-neutral);
+  --trs80-light-green: #03f106;
+  --trs80-dark-green: #004400;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --current-background: var(--dark-background);
+    --current-foreground: var(--dark-foregeound);
+    --current-dark-accent: var(--dark-dark-accent);
+    --current-light-accent: var(--dark-light-accent);
+    --current-neutral: var(--dark-neutral);
+  }
+}
+
+.pipFlex {
+  user-select: none;
+  position: absolute;
+  top: 150px;
+  left: 20px;
+  width: 75px;
+  height: 50px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+  gap: 2px;
+}
+
+.pipButtons {
+  user-select: none;
+  cursor: pointer;
+  border: transparent 1px solid;
+  border-radius: 500px;
+  font-family: myFont;
+  font-size: small;
+  background-color: #5e676b;
+  background-image: url("./assets/buttontexture.png");
+  background-repeat: no-repeat;
+  background-size: cover;
+  width: 90%;
+  color: rgb(228, 155, 155);
+  text-align: center;
+  background-blend-mode: multiply;
+}
+
+.pipButtons:hover {
+  box-shadow: 0px 0px 15px 5px rgba(201, 65, 65, 1);
+}
+
+.controls {
+  position: fixed;
+  left: 20px;
+  top: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 20px;
+  align-items: flex-start;
+}
+
+.result {
+  text-align: center;
+}
+
+.minigame {
+  position: fixed;
+  width: 500px;
+  aspect-ratio: 1.49/1;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  transition: transform 0.35s ease-in-out;
+
+  background-image: url("./assets/background.png");
+  background-repeat: no-repeat;
+  background-size: contain;
+  /*   background-color: var(--trs80-dark-green);
+   */
+  background-blend-mode: multiply;
+  border: 25px solid transparent;
+  border-radius: 25px;
+  border-image: url("./assets/border.svg");
+  border-image-slice: 20 20 20 20;
+  border-image-width: 20px 20px 20px 20px;
+  border-image-outset: 0px 0px 0px 0px;
+  border-image-repeat: stretch stretch;
+}
+
+.minigame.pui-adding {
+  transform: translate(-250%, -50%);
+}
+
+.minigame.pui-removing {
+  transform: translate(-250%, -50%);
+}
+
+.game_title {
+  user-select: none;
+  position: absolute;
+  top: 15px;
+  font-family: myFont;
+  font-size: large;
+  color: var(--trs80-light-green);
+  width: 100%;
+  text-align: center;
+}
+.game_subtitle {
+  position: absolute;
+  top: 40px;
+  font-family: myFont;
+  font-size: small;
+  text-align: center;
+  color: var(--trs80-light-green);
+  width: 100%;
+  user-select: none;
+}
+
+.lampflex {
+  position: absolute;
+  border: 1px var(--trs80-light-green) dotted;
+  border-radius: 500px;
+  left: 50%;
+  transform: translateX(-50%);
+  top: 80px;
+  width: 200px;
+  height: auto;
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  gap: 5px;
+  padding: 2px;
+}
+
+.lamptitle {
+  user-select: none;
+  font-family: myFont;
+  font-size: xx-small;
+  text-align: left;
+  color: var(--trs80-light-green);
+}
+
+.lamp {
+  background-image: url("./assets/lamp-Sheet.png");
+  width: 20px;
+  height: 20px;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.gameborder {
+  position: absolute;
+  border: 1px var(--trs80-light-green) dotted;
+  border-radius: 5px;
+  left: 50%;
+  transform: translateX(-30%);
+  top: 70px;
+  width: 325px;
+  height: 325px;
+}
+
+.gamebox {
+  margin: 2px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-content: space-evenly;
+  gap: 5px;
+  padding: 5px;
+  user-select: none;
+  position: relative;
+}
+.gamesquares {
+  aspect-ratio: 1/1;
+  width: 20px;
+  border: 1px var(--trs80-light-green) solid;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font: xx-small;
+  color: var(--trs80-light-green);
+  font-family: Helvetica;
+  user-select: none;
+  transition: rotate 0.4s ease-in-out;
+  position: relative;
+}
+
+.finalModal {
+  position: absolute;
+  border: #03f106 3px solid;
+  background-color: #004400;
+  border-radius: 10px;
+  width: 400px;
+  height: 100px;
+  top: 70%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 4;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-content: center;
+}
+
+.modalText {
+  width: 100%;
+  color: #c4ced2;
+  font-size: 40px;
+  font-family: myFont;
+  text-align: center;
+}
+
+.helpModal {
+  user-select: none;
+  padding: 15px;
+  position: absolute;
+  border: #03f106 3px solid;
+  background-color: #004400;
+  border-radius: 10px;
+  width: 400px;
+  height: 200px;
+  top: 70%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 4;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-content: flex-start;
+}
+
+.helpText {
+  user-select: none;
+  width: 100%;
+  color: #b3b4b4;
+  font-size: 13px;
+  font-family: Arial, Helvetica, sans-serif;
+  text-align: left;
+  letter-spacing: 1px;
+}
+
+.countdown {
+  user-select: none;
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  border: #03f106 1px dotted;
+  border-radius: 5px;
+  width: 80px;
+  text-align: center;
+  font-family: myFont;
+  color: #03f106;
+  font-size: small;
+}
+
+.countdown > div {
+  font-family: myFont;
+  color: #03f106;
+  font-size: xx-large;
+}
+
+.timerflex {
+  margin-left: 24px;
+  padding-left: 5px;
+  padding-right: 5px;
+  padding-top: 5px;
+  position: absolute;
+  top: 70px;
+  font-family: myFont;
+  font-size: small;
+  text-align: left;
+  color: var(--trs80-light-green);
+  width: 80px;
+  height: 60px;
+  user-select: none;
+  border: #03f106 1.5px dotted;
+  border-radius: 10px;
+  letter-spacing: 0.5px;
+}
+
+.timer {
+  padding-left: 15px;
+  padding-top: 5px;
+  position: absolute;
+  font-family: myFont;
+  font-size: x-large;
+  text-align: left;
+  color: var(--trs80-light-green);
+  width: 100%;
+  user-select: none;
+  letter-spacing: 0.5px;
+}
+
+.tilesize_lrg {
+  aspect-ratio: 1/1;
+  width: 98px;
+}
+.tilesize_med {
+  aspect-ratio: 1/1;
+  width: 72px;
+}
+.tilesize_small {
+  aspect-ratio: 1/1;
+  width: 56px;
+}
+
+.tiletype_straight {
+  background-image: url("./assets/straight.svg");
+}
+.tiletype_cross {
+  background-image: url("./assets/cross.svg");
+}
+.tiletype_elbow {
+  background-image: url("./assets/elbow.svg");
+}
+.tiletype_dblelbow {
+  background-image: url("./assets/dbl_elbow.svg");
+}
+
+.energized {
+  width: 100%;
+  height: 100%;
+}
+
+.shock {
+  background-image: url("./assets/shock-Sheet.png");
+  background-repeat: no-repeat;
+}
+.shock_cross {
+  background-image: url("./assets/shock-cross-Sheet.png");
+  background-repeat: no-repeat;
+}
+.shock_dbl_elbow {
+  background-image: url("./assets/shock-dbl-elbow-Sheet.png");
+  background-repeat: no-repeat;
+}
+.shock_elbow {
+  background-image: url("./assets/shock-elbow-Sheet.png");
+  background-repeat: no-repeat;
+}
+
+.startsquare {
+  background-image: url("./assets/powernode.png");
+  position: absolute;
+  width: 20px;
+  height: 10px;
+}
+
+.stopsquare {
+  background-image: url("./assets/bypassnode.png");
+  position: absolute;
+  width: 29px;
+  height: 12px;
+}
+
+.stop_top {
+  rotate: 90deg;
+  top: 0;
+  left: 50%;
+}
+.stop_right {
+  right: -40px;
+  top: 50%;
+}
+.stop_bottom {
+  rotate: -90deg;
+  bottom: -29px;
+  left: 50%;
+}
