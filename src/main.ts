@@ -150,13 +150,13 @@ const model = {
         startingIndex = chance.pickone([0, 3, 6]);
         if (startingIndex == 0) {
           stoppingIndex = chance.pickone([2, 5, 8]);
-          model.hotwire.startingSquareCoords = { x: -25, y: 50 };
+          model.hotwire.startingSquareCoords = { x: -35, y: 50 };
         } else if (startingIndex == 3) {
           stoppingIndex = chance.pickone([2, 5, 8]);
-          model.hotwire.startingSquareCoords = { x: -25, y: 155 };
+          model.hotwire.startingSquareCoords = { x: -35, y: 155 };
         } else {
           stoppingIndex = chance.pickone([2, 5, 8]);
-          model.hotwire.startingSquareCoords = { x: -25, y: 260 };
+          model.hotwire.startingSquareCoords = { x: -35, y: 260 };
         }
         if (stoppingIndex == 2) model.hotwire.stoppingSquareCoords = { x: 330, y: 50 };
         else if (stoppingIndex == 5) model.hotwire.stoppingSquareCoords = { x: 330, y: 155 };
@@ -166,24 +166,24 @@ const model = {
         startingIndex = chance.pickone([0, 4, 8, 12]);
         if (startingIndex == 0) {
           stoppingIndex = chance.pickone([7, 11, 15, 14]);
-          model.hotwire.startingSquareCoords = { x: -25, y: 38 };
+          model.hotwire.startingSquareCoords = { x: -35, y: 38 };
         } else if (startingIndex == 4) {
           stoppingIndex = chance.pickone([3, 11, 15, 14]);
-          model.hotwire.startingSquareCoords = { x: -25, y: 118 };
+          model.hotwire.startingSquareCoords = { x: -35, y: 118 };
         } else if (startingIndex == 8) {
           stoppingIndex = chance.pickone([2, 3, 11, 15]);
-          model.hotwire.startingSquareCoords = { x: -25, y: 196 };
+          model.hotwire.startingSquareCoords = { x: -35, y: 196 };
         } else {
           stoppingIndex = chance.pickone([2, 3, 7, 11]);
-          model.hotwire.startingSquareCoords = { x: -25, y: 275 };
+          model.hotwire.startingSquareCoords = { x: -35, y: 275 };
         }
 
         if (stoppingIndex == 2) {
           stopside = "top";
-          model.hotwire.stoppingSquareCoords = { x: 187, y: -10 };
+          model.hotwire.stoppingSquareCoords = { x: 180, y: -10 };
         } else if (stoppingIndex == 3) {
           stopside = chance.pickone(["top", "right"]);
-          if (stopside == "top") model.hotwire.stoppingSquareCoords = { x: 265, y: -10 };
+          if (stopside == "top") model.hotwire.stoppingSquareCoords = { x: 260, y: -10 };
           else model.hotwire.stoppingSquareCoords = { x: 330, y: 38 };
         } else if (stoppingIndex == 7 || stoppingIndex == 11) {
           stopside = "right";
@@ -191,29 +191,29 @@ const model = {
           else model.hotwire.stoppingSquareCoords = { x: 330, y: 195 };
         } else if (stoppingIndex == 15) {
           stopside = chance.pickone(["bottom", "right"]);
-          if (stopside == "bottom") model.hotwire.stoppingSquareCoords = { x: 265, y: 315 };
+          if (stopside == "bottom") model.hotwire.stoppingSquareCoords = { x: 260, y: 315 };
           else model.hotwire.stoppingSquareCoords = { x: 330, y: 275 };
         } else if (stoppingIndex == 14) {
           stopside = "bottom";
-          model.hotwire.stoppingSquareCoords = { x: 187, y: 315 };
+          model.hotwire.stoppingSquareCoords = { x: 180, y: 315 };
         }
       } else {
         startingIndex = chance.pickone([0, 5, 10, 15, 20]);
         if (startingIndex == 0) {
           stoppingIndex = chance.pickone([4, 9, 14, 19, 24, 23, 22]);
-          model.hotwire.startingSquareCoords = { x: -25, y: 30 };
+          model.hotwire.startingSquareCoords = { x: -35, y: 30 };
         } else if (startingIndex == 5) {
           stoppingIndex = chance.pickone([3, 4, 9, 14, 19, 24, 23, 22]);
-          model.hotwire.startingSquareCoords = { x: -25, y: 93 };
+          model.hotwire.startingSquareCoords = { x: -35, y: 93 };
         } else if (startingIndex == 10) {
           stoppingIndex = chance.pickone([2, 3, 4, 9, 14, 19, 24, 23, 22]);
-          model.hotwire.startingSquareCoords = { x: -25, y: 155 };
+          model.hotwire.startingSquareCoords = { x: -35, y: 155 };
         } else if (startingIndex == 15) {
           stoppingIndex = chance.pickone([2, 3, 4, 9, 14, 19, 24, 23]);
-          model.hotwire.startingSquareCoords = { x: -25, y: 218 };
+          model.hotwire.startingSquareCoords = { x: -35, y: 218 };
         } else {
           stoppingIndex = chance.pickone([1, 2, 3, 4, 9, 14, 19, 24]);
-          model.hotwire.startingSquareCoords = { x: -25, y: 280 };
+          model.hotwire.startingSquareCoords = { x: -35, y: 280 };
         }
 
         if (stoppingIndex == 1 || stoppingIndex == 2 || stoppingIndex == 3) {

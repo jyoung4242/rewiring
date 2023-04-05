@@ -388,15 +388,19 @@ body {
 .startsquare {
   background-image: url("./assets/powernode.png");
   position: absolute;
-  width: 20px;
-  height: 10px;
+  width: 30px;
+  height: 15px;
+  background-repeat: no-repeat;
+  background-size: cover;
 }
 
 .stopsquare {
   background-image: url("./assets/bypassnode.png");
   position: absolute;
-  width: 29px;
-  height: 12px;
+  width: 42px;
+  height: 18px;
+  background-repeat: no-repeat;
+  background-size: cover;
 }
 
 .stop_top {
