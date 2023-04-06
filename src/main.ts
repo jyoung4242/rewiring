@@ -40,8 +40,8 @@ const animationFrameDims = {
 const model = {
   launch: (event: any, model: any) => {
     model.seed = Math.random() * Date.now();
-    //chance = new Chance(model.seed);
-    chance = new Chance(468385451142.85785);
+    chance = new Chance(model.seed);
+    //chance = new Chance(468385451142.85785);
 
     switch (model.level) {
       case "easy":
