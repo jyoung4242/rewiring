@@ -113,7 +113,11 @@ const model = {
       model.hotwire.squares = [];
 
       for (let index = 0; index < model.hotwire.numOfTargets; index++) {
-        let tile = chance.pickone(["tiletype_straight", "tiletype_elbow", "tiletype_cross", "tiletype_dblelbow"]);
+        //let tile = chance.pickone(["tiletype_straight", "tiletype_elbow", "tiletype_cross", "tiletype_dblelbow"]);
+        let tile = chance.weighted(
+          ["tiletype_straight", "tiletype_elbow", "tiletype_cross", "tiletype_dblelbow"],
+          [7, 7, 1, 7]
+        );
         let tilesize = "";
         let width = Math.sqrt(model.hotwire.numOfTargets);
         if (model.hotwire.numOfTargets == 9) tilesize = "tilesize_lrg";
@@ -122,7 +126,7 @@ const model = {
         model.hotwire.squares.push({
           id: index,
           wall: 1,
-          angle: chance.pickone([0, 90, -90, 180]),
+          angle: chance.weighted([90, -90, 180], [3, 3, 1]),
           tilesize: tilesize,
           tiletype: tile,
           get connectionPoints() {
@@ -302,9 +306,10 @@ const model = {
         let currentIndex = getIndexFromCoords(currentCoords, width);
         if (currentDirection == "left") {
           if (direction == "right") {
-            model.hotwire.squares[currentIndex].tiletype = chance.pickone(["tiletype_straight", "tiletype_cross"]);
+            //model.hotwire.squares[currentIndex].tiletype = chance.pickone(["tiletype_straight", "tiletype_cross"]);
+            model.hotwire.squares[currentIndex].tiletype = chance.weighted(["tiletype_straight", "tiletype_cross"], [7, 1]);
           } else {
-            model.hotwire.squares[currentIndex].tiletype = chance.pickone(["tiletype_elbow", "tiletype_dblelbow"]);
+            model.hotwire.squares[currentIndex].tiletype = chance.weighted(["tiletype_elbow", "tiletype_dblelbow"], [4, 1]);
           }
         } else if (currentDirection == "up") {
           if (direction == "down") {
@@ -326,6 +331,7 @@ const model = {
           }
         }
         model.hotwire.squares[currentIndex].energizetype = getEnergizeImage(model.hotwire.squares[currentIndex].tiletype);
+        model.hotwire.squares[currentIndex].angle = chance.weighted([90, -90, 180], [5, 5, 1]);
 
         //get ready for next tile
         currentCoords = { x: tile.x, y: tile.y };
@@ -446,6 +452,10 @@ const template = `<div>
             <option \${'hard' ==> level}>Hard</option>
         </select>
         <input class="result" type="text" readonly \${value<==result}></input>  
+        <div>Send any noted issues, Seed Value and screenshots to <a href="mailto:mookie_9@yahoo.com">mookie_9@yahoo.com</a> </div>
+        <div>Discord account mookie#6419</div>
+        <div>Twitter account: @jyoung424242</div>
+        <div>Diagnostic Seed Value for troubleshooting: \${seed}</div>
         
     </div>
     <div class="minigame" \${===hotwire.isVisible} style="width:\${hotwire.appwidth}px">
