@@ -83,7 +83,7 @@ const model = {
   },
   level: "easy",
   result: "waiting",
-  seed: <any>undefined,
+  seed: <any>"",
   hotwire: {
     numOfTargets: 0,
     squares: <any>[],
