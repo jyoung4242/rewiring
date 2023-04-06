@@ -40,8 +40,8 @@ const animationFrameDims = {
 const model = {
   launch: (event: any, model: any) => {
     model.seed = Math.random() * Date.now();
-    chance = new Chance(model.seed);
-    //chance = new Chance(978215731746.3297);
+    //chance = new Chance(model.seed);
+    chance = new Chance(468385451142.85785);
 
     switch (model.level) {
       case "easy":
@@ -85,6 +85,8 @@ const model = {
   result: "waiting",
   seed: <any>"",
   hotwire: {
+    debounceRight: false,
+    debounceLeft: false,
     numOfTargets: 0,
     squares: <any>[],
     startingSquare: 0,
@@ -400,6 +402,9 @@ const model = {
       }
     },
     squareclick: (_e: any, model: any, el: any, a: any, object: any) => {
+      if (object.$parent.$model.hotwire.debounceLeft) return;
+      object.$parent.$model.hotwire.debounceLeft = true;
+      setTimeout(() => (object.$parent.$model.hotwire.debounceLeft = false), 250);
       if (
         object.$parent.$model.hotwire.victoryStatus == "VICTORY" ||
         object.$parent.$model.hotwire.victoryStatus == "UNSUCCESSFUL"
@@ -409,6 +414,10 @@ const model = {
     },
     energizeHandler: 0,
     squareRightClick: (_e: any, model: any, el: any, a: any, object: any) => {
+      if (object.$parent.$model.hotwire.debounceRight) return;
+      object.$parent.$model.hotwire.debounceRight = true;
+      setTimeout(() => (object.$parent.$model.hotwire.debounceRight = false), 250);
+
       if (
         object.$parent.$model.hotwire.victoryStatus == "VICTORY" ||
         object.$parent.$model.hotwire.victoryStatus == "UNSUCCESSFUL"
@@ -456,6 +465,9 @@ const template = `<div>
         <div>Discord account mookie#6419</div>
         <div>Twitter account: @jyoung424242</div>
         <div>Diagnostic Seed Value for troubleshooting: \${seed}</div>
+        <div>Version 0.0.1</div>
+        <div>- added debouncing to click events</div>
+        
         
     </div>
     <div class="minigame" \${===hotwire.isVisible} style="width:\${hotwire.appwidth}px">
