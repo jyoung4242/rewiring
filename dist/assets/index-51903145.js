@@ -13,8 +13,8 @@ var de=Object.defineProperty;var he=(C,i,r)=>i in C?de(C,i,{enumerable:!0,config
         <div>Discord account mookie#6419</div>
         <div>Twitter account: @jyoung424242</div>
         <div>Diagnostic Seed Value for troubleshooting: \${seed}</div>
-        <div>Version 0.0.1</div>
-        <div>- added debouncing to click events</div>
+        <div>Version 0.0.2</div>
+        <div>- fixed seed issue removed</div>
         
         
     </div>
